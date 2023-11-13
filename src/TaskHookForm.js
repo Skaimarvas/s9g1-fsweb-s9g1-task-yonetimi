@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -18,68 +19,80 @@ export default function TaskHookForm({ kisiler, submitFn }) {
     mode: "all",
   });
 
-  const formsubmit = (formData) => {
+  const formsubmit = (formData, e) => {
     console.log("Form Data :", formData);
-    toast.success("Submit edildi.");
+    toast.success("Yeni Görev Eklendi");
+    submitFn({ ...formData, id: nanoid(5), status: "yapılacak" });
+    e.target.reset();
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit(formsubmit)}>
-        <div>
-          <label>
+      <form className="taskForm" onSubmit={handleSubmit(formsubmit)}>
+        <div className="form-line">
+          <label className="input-label" htmlFor="title">
             {" "}
             Başlık
-            <input
-              type="text"
-              {...register("title", {
-                required: "Task başlığı yazmalsınız",
-                minLength: {
-                  value: 3,
-                  message: "Task başlığı en az 3 karakter olmalı",
-                },
-              })}
-            />
           </label>
+          <input
+            className="input-text"
+            id="title"
+            type="text"
+            {...register("title", {
+              required: "Task başlığı yazmalsınız",
+              minLength: {
+                value: 3,
+                message: "Task başlığı en az 3 karakter olmalı",
+              },
+            })}
+          />
+
+          <p className="input-error"> {errors?.title?.message} </p>
         </div>
-        <div>
-          <p> {errors?.title?.message} </p>
-        </div>
-        <div>
-          <label>
+
+        <div className="form-line">
+          <label className="input-label" htmlFor="description">
             Açıklama
-            <textarea
-              rows="3"
-              {...register("description", {
-                required: "Task açıklaması yazmalasınız",
-                minLength: {
-                  value: 10,
-                  message: "Task açıklaması en az 10 karakter olmalı",
-                },
-              })}
-            />
           </label>
+          <textarea
+            className="input-textarea"
+            id="description"
+            rows="3"
+            {...register("description", {
+              required: "Task açıklaması yazmalasınız",
+              minLength: {
+                value: 10,
+                message: "Task açıklaması en az 10 karakter olmalı",
+              },
+            })}
+          />
+          <p className="input-error">{errors?.description?.message}</p>
         </div>
-        <div>{errors?.description?.message}</div>
-        <div>
+
+        <div className="form-line">
+          <label className="input-label">İnsanlar </label>
           <div>
-            <label>İnsanlar </label>
-            <div>
-              {kisiler.map((p) => (
-                <label key={p}>
-                  <input
-                    type="checkbox"
-                    value={p}
-                    {...register("people", {
-                      required: "En az bir seçenek seçmelisiniz",
-                    })}
-                  />
-                  {p}
-                </label>
-              ))}
-            </div>
+            {kisiler.map((p) => (
+              <label className="input-checkbox" key={p}>
+                <input
+                  type="checkbox"
+                  value={p}
+                  {...register("people", {
+                    required: "En az bir seçenek seçmelisiniz",
+                  })}
+                />
+                {p}
+              </label>
+            ))}
           </div>
-          <button type="submit"> Kaydet </button>
+          <p className="input-error"> {errors?.people?.message} </p>
+        </div>
+
+        <div className="form-line">
+          <button className="submit-button" type="submit" disabled={!isValid}>
+            {" "}
+            Kaydet{" "}
+          </button>
         </div>
       </form>
     </div>
